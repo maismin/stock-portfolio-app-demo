@@ -3,6 +3,8 @@ const next = require('next');
 const connectDB = require('./utils/db');
 const logger = require('./utils/logger');
 
+const signupRouter = require('./routes/api/signup');
+
 const dev = process.env.NODE !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
@@ -16,6 +18,8 @@ app
     const server = express();
     server.use(express.json()); // parse body
 
+    server.use('/api/signup', signupRouter);
+
     // handle all the routes
     server.get('*', (req, res) => {
       return handle(req, res);
@@ -27,6 +31,6 @@ app
     });
   })
   .catch(error => {
-    console.error(error.stack);
+    logger.error(error.stack);
     process.exit(1);
   });
