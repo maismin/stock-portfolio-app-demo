@@ -4,6 +4,7 @@ const connectDB = require('./utils/db');
 const logger = require('./utils/logger');
 
 const signupRouter = require('./routes/api/signup');
+const loginRouter = require('./routes/api/login');
 
 const dev = process.env.NODE !== 'production';
 const app = next({ dev });
@@ -19,6 +20,7 @@ app
     server.use(express.json()); // parse body
 
     server.use('/api/signup', signupRouter);
+    server.use('/api/login', loginRouter);
 
     // handle all the routes
     server.get('*', (req, res) => {
