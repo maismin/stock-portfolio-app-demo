@@ -6,6 +6,7 @@ const logger = require('./utils/logger');
 const signupRouter = require('./routes/api/signup');
 const loginRouter = require('./routes/api/login');
 const portfolioRouter = require('./routes/api/portfolios');
+const transactionRouter = require('./routes/api/transactions');
 
 const dev = process.env.NODE !== 'production';
 const app = next({ dev });
@@ -23,6 +24,7 @@ app
     server.use('/api/signup', signupRouter);
     server.use('/api/login', loginRouter);
     server.use('/api/portfolio', portfolioRouter);
+    server.use('/api/transactions', transactionRouter);
 
     // handle all the routes
     server.get('*', (req, res) => {
