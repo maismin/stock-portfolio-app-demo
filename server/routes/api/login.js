@@ -24,9 +24,11 @@ router.post('/', async (req, res) => {
     const passwordsMatch = await bcrypt.compare(password, user.password);
     // 4) if so, generate a token
     if (passwordsMatch) {
-      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
-        expiresIn: '7d',
-      });
+      const token = jwt.sign(
+        { userId: user._id }, // eslint-disable-line no-underscore-dangle
+        process.env.JWT_SECRET,
+        { expiresIn: '7d' },
+      );
       // 5) send token to the client
       return res.status(200).json({ token });
     }

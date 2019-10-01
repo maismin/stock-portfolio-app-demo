@@ -30,6 +30,4 @@ const userSchema = new mongoose.Schema(
   options,
 );
 
-userSchema.virtual('id').get(() => this._id); // eslint-disable-line no-underscore-dangle
-
 module.exports = mongoose.model('User', userSchema);
