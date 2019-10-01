@@ -2,6 +2,7 @@ import { Menu, Container, Icon } from 'semantic-ui-react';
 import Link from 'next/link';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
+import { handleLogout } from '../../../utils/auth';
 
 const Header = ({ user }) => {
   const router = useRouter();
@@ -33,7 +34,7 @@ const Header = ({ user }) => {
 
         {user ? (
           <>
-            <Menu.Item header>
+            <Menu.Item header onClick={handleLogout}>
               <Icon name="sign out" size="large" />
               Logout
             </Menu.Item>
@@ -61,7 +62,7 @@ const Header = ({ user }) => {
 };
 
 Header.propTypes = {
-  user: PropTypes.object.isRequired, // eslint-disable-line
+  user: PropTypes.object, // eslint-disable-line
 };
 
 export default Header;

@@ -25,7 +25,7 @@ function Layout({ children, user }) {
 
 Layout.propTypes = {
   children: PropTypes.object.isRequired, // eslint-disable-line
-  user: PropTypes.object.isRequired, // eslint-disable-line
+  user: PropTypes.object, // eslint-disable-line
 };
 
 export default Layout;
