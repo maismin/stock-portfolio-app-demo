@@ -6,6 +6,14 @@ const options = {
   timestamps: true,
 };
 
+const actionOptions = ['BUY', 'TRADE'];
+
+class transactionClass {
+  static validActions() {
+    return actionOptions;
+  }
+}
+
 const transactionSchema = new mongoose.Schema(
   {
     user: {
@@ -15,7 +23,7 @@ const transactionSchema = new mongoose.Schema(
     action: {
       type: String,
       required: true,
-      enum: ['BUY', 'SELL'],
+      enum: actionOptions,
     },
     ticker: {
       type: String,
@@ -32,5 +40,7 @@ const transactionSchema = new mongoose.Schema(
   },
   options,
 );
+
+transactionSchema.loadClass(transactionClass);
 
 module.exports = mongoose.model('Transaction', transactionSchema);
