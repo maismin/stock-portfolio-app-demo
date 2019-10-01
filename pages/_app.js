@@ -1,10 +1,8 @@
 import App from 'next/app';
-import axios from 'axios';
 import { withRouter } from 'next/router';
-import { parseCookies, destroyCookie } from 'nookies';
+import { parseCookies } from 'nookies';
 import Layout from '../components/_App/layouts/Layout';
 import { redirectUser } from '../utils/auth';
-import baseUrl from '../utils/baseUrl';
 
 class MyApp extends App {
   static async getInitialProps({ Component, ctx }) {
@@ -16,29 +14,13 @@ class MyApp extends App {
     }
     // User isn't authenticated
     if (!token) {
-      // is protected route access?
+      // check if protected routes are accessed
       const isProtectedRoute =
         ctx.pathname === '/portfolio' || ctx.pathname === '/transactions';
       if (isProtectedRoute) {
         redirectUser(ctx, '/login');
       }
-    } else {
-      // Get user account with token
-      try {
-        const url = `${baseUrl}/api/auth`;
-        // To use jwt for authorization, it needs to be in the header
-        const payload = { headers: { authorization: token } };
-        const response = await axios.get(url, payload);
-        const user = response.data;
-        pageProps.user = user;
-      } catch (error) {
-        // 1) Throw out invalid token
-        destroyCookie(ctx, 'token');
-        // 2) Redirect to login
-        redirectUser(ctx, '/login');
-      }
     }
-
     return { pageProps };
   }
 

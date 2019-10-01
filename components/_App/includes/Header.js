@@ -1,11 +1,12 @@
 import { Menu, Container, Icon } from 'semantic-ui-react';
 import Link from 'next/link';
-import PropTypes from 'prop-types';
+import cookie from 'js-cookie';
 import { useRouter } from 'next/router';
 import { handleLogout } from '../../../utils/auth';
 
-const Header = ({ user }) => {
+const Header = () => {
   const router = useRouter();
+  const isAuthenticated = cookie.get('token');
 
   const isActive = route => {
     return route === router.pathname;
@@ -32,7 +33,7 @@ const Header = ({ user }) => {
           </Menu.Item>
         </Link>
 
-        {user ? (
+        {isAuthenticated ? (
           <>
             <Menu.Item header onClick={handleLogout}>
               <Icon name="sign out" size="large" />
@@ -59,10 +60,6 @@ const Header = ({ user }) => {
       </Container>
     </Menu>
   );
-};
-
-Header.propTypes = {
-  user: PropTypes.object, // eslint-disable-line
 };
 
 export default Header;

@@ -4,7 +4,7 @@ import { Container } from 'semantic-ui-react';
 
 import Header from '../includes/Header';
 
-function Layout({ children, user }) {
+function Layout({ children }) {
   return (
     <>
       <Head>
@@ -15,7 +15,7 @@ function Layout({ children, user }) {
         />
         <title>Stock Portfolio App Demo</title>
       </Head>
-      <Header user={user} />
+      <Header />
       <Container text style={{ paddingTop: '1em' }}>
         {children}
       </Container>
@@ -25,7 +25,6 @@ function Layout({ children, user }) {
 
 Layout.propTypes = {
   children: PropTypes.object.isRequired, // eslint-disable-line
-  user: PropTypes.object, // eslint-disable-line
 };
 
 export default Layout;
