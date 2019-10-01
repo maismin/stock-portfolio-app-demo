@@ -3,9 +3,9 @@ const next = require('next');
 const connectDB = require('./utils/db');
 const logger = require('./utils/logger');
 
-const authRouter = require('./routes/api/auth');
 const signupRouter = require('./routes/api/signup');
 const loginRouter = require('./routes/api/login');
+const portfolioRouter = require('./routes/api/portfolios');
 
 const dev = process.env.NODE !== 'production';
 const app = next({ dev });
@@ -20,9 +20,9 @@ app
     const server = express();
     server.use(express.json()); // parse body
 
-    server.use('/api/auth', authRouter);
     server.use('/api/signup', signupRouter);
     server.use('/api/login', loginRouter);
+    server.use('/api/portfolio', portfolioRouter);
 
     // handle all the routes
     server.get('*', (req, res) => {
