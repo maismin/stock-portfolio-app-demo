@@ -63,11 +63,11 @@ router.post('/', auth, async (req, res) => {
 
   // Calculate price of shares
   const price = Number(quote['05. price']).toFixed(2);
-  const totalCostOfShares = Number(shares) * price;
+  const totalCostOfShares = (Number(shares) * price).toFixed(2);
 
-  let newBalance = user.balance;
+  let newBalance = Number(user.balance).toFixed(2);
   if (action === 'BUY') {
-    newBalance = user.balance - totalCostOfShares;
+    newBalance -= totalCostOfShares;
     if (newBalance < 0) {
       return res.status(400).json({ error: 'Not enough funds' });
     }
@@ -104,7 +104,7 @@ router.post('/', auth, async (req, res) => {
       return res.status(400).json({ error: 'Insufficient shares' });
     }
 
-    newBalance = user.balance + totalCostOfShares;
+    newBalance += totalCostOfShares;
 
     // Update or delete portfolio shares
     if (userStock.shares > shares) {
