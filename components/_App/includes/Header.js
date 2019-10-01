@@ -1,9 +1,9 @@
 import { Menu, Container, Icon } from 'semantic-ui-react';
 import Link from 'next/link';
+import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
 
-const Header = () => {
-  const user = false;
+const Header = ({ user }) => {
   const router = useRouter();
 
   const isActive = route => {
@@ -58,6 +58,10 @@ const Header = () => {
       </Container>
     </Menu>
   );
+};
+
+Header.propTypes = {
+  user: PropTypes.object.isRequired, // eslint-disable-line
 };
 
 export default Header;
