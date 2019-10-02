@@ -1,4 +1,3 @@
-const axios = require('axios');
 const express = require('express');
 const mongoose = require('mongoose');
 const auth = require('../../middleware/auth');
@@ -6,6 +5,8 @@ const auth = require('../../middleware/auth');
 const User = require('../../models/User');
 const Portfolio = require('../../models/Portfolio');
 const Transaction = require('../../models/Transaction');
+
+const alphavantageApi = require('../../services/alphavantage');
 
 const router = express.Router();
 
@@ -30,33 +31,17 @@ router.get('/', auth, async (req, res) => {
       .select('-_id -user -createdAt -updatedAt -__v')
       .lean();
 
-    const vantageURI = process.env.ALPHA_VANTAGE_URI;
-    const vantageKEY = process.env.ALPHA_VANTAGE_KEY;
-    const functionValue = 'GLOBAL_QUOTE';
-
-    // Helper function to look up a single stock info from external api
-    const getStockInfo = async stock => {
-      const params = {
-        function: functionValue,
-        symbol: stock.ticker,
-        apikey: vantageKEY,
-      };
-      const payload = { params };
-      const response = await axios.get(vantageURI, payload);
-      return response.data;
-    };
-
     // Grab all the latest info on the stocks that the user owns
-    const stocksInfo = await Promise.all(
-      stocks.map(stock => getStockInfo(stock)),
+    const stockQuotes = await Promise.all(
+      stocks.map(stock => alphavantageApi.getStockQuote(stock.ticker)),
     );
 
     for (let i = 0; i < stocks.length; i += 1) {
       const stock = stocks[i];
-      const quote = stocksInfo[i]['Global Quote'];
-      const openPrice = Number(quote['02. open']).toFixed(2);
-      const currentPrice = Number(quote['05. price']).toFixed(2);
-      console.log(openPrice, currentPrice);
+      const stockQuote = stockQuotes[i]['Global Quote'];
+      const openPrice = Number(stockQuote['02. open']).toFixed(2);
+      const currentPrice = Number(stockQuote['05. price']).toFixed(2);
+
       if (currentPrice < openPrice) {
         stock.performance = -1;
       } else if (currentPrice === openPrice) {
@@ -64,7 +49,6 @@ router.get('/', auth, async (req, res) => {
       } else {
         stock.performance = 1;
       }
-
       stock.value = stock.shares * currentPrice;
     }
 
@@ -99,23 +83,9 @@ router.post('/', auth, async (req, res) => {
 
     const user = await User.findOne({ _id: req.userId });
 
-    const vantageURI = process.env.ALPHA_VANTAGE_URI;
-    const vantageKEY = process.env.ALPHA_VANTAGE_KEY;
-    const functionValue = 'GLOBAL_QUOTE';
-
-    const payload = {
-      params: {
-        function: functionValue,
-        symbol: ticker,
-        apikey: vantageKEY,
-      },
-    };
-
-    // Grab quote from vantage API
-    const response = await axios.get(vantageURI, payload);
-
     // Check if quote symbol matches what the user wants
-    const quote = response.data['Global Quote'];
+    const quote = (await alphavantageApi.getStockQuote(ticker))['Global Quote'];
+
     if (!quote || quote['01. symbol'] !== ticker) {
       return res.status(400).json({ error: 'Invalid ticker' });
     }
