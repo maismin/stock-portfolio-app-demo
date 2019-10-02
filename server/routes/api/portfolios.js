@@ -28,7 +28,7 @@ router.get('/', auth, async (req, res) => {
     const stocks = await Portfolio.find({
       user: ObjectId(req.userId),
     })
-      .select('-_id -user -createdAt -updatedAt -__v')
+      .select('-user -createdAt -updatedAt -__v')
       .lean();
 
     // Grab all the latest info on the stocks that the user owns
