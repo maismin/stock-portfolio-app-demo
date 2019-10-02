@@ -66,12 +66,14 @@ router.get('/', auth, async (req, res) => {
 
 /**
  * @route   POST api/portfolio
- * @desc    Buy and trade stocks
+ * @desc    Buy and sell stocks
  * @access  Public
  */
 router.post('/', auth, async (req, res) => {
   try {
-    const { action, ticker, shares } = req.body;
+    const action = req.body.action.toUpperCase();
+    const ticker = req.body.ticker.trim().toUpperCase();
+    const shares = Number(req.body.shares);
 
     // Check if transaction action is valid
     if (!transactionOptions.includes(action)) {
@@ -79,7 +81,7 @@ router.post('/', auth, async (req, res) => {
     }
 
     // Check if shares is a whole number
-    if (!Number.isInteger(Number(shares))) {
+    if (!Number.isInteger(shares)) {
       return res
         .status(400)
         .json({ error: 'Shares value must be a whole number' });
@@ -91,12 +93,13 @@ router.post('/', auth, async (req, res) => {
     const quote = (await alphavantageApi.getStockQuote(ticker))['Global Quote'];
 
     if (!quote || quote['01. symbol'] !== ticker) {
+      console.log(`Ticker: ${ticker}, Quote: ${quote}`);
       return res.status(400).json({ error: 'Invalid ticker' });
     }
 
     // Calculate price of shares
     const price = Number(quote['05. price']).toFixed(2);
-    const totalCostOfShares = Number(shares) * price;
+    const totalCostOfShares = shares * price;
 
     let newBalance = user.balance;
 
@@ -155,7 +158,10 @@ router.post('/', auth, async (req, res) => {
     }
 
     // Update user's balance
-    await User.findOneAndUpdate({ _id: req.userId }, { balance: newBalance }); // eslint-disable-line no-underscore-dangle
+    await User.findOneAndUpdate(
+      { _id: req.userId },
+      { balance: newBalance.toFixed(2) },
+    ); // eslint-disable-line no-underscore-dangle
 
     // Record transaction
     await new Transaction({
