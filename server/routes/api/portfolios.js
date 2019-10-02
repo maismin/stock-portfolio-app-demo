@@ -16,7 +16,65 @@ const { ObjectId } = mongoose.Types;
  * @desc    Retrieve user's portfolio
  * @access  Public
  */
-// router.get('/', async (req, res) => {});
+router.get('/', auth, async (req, res) => {
+  try {
+    // Get user info
+    const user = await User.findOne({ _id: req.userId })
+      .select('-_id -email -createdAt -updatedAt -__v')
+      .lean();
+
+    // Get user's portfolio from database
+    const stocks = await Portfolio.find({
+      user: ObjectId(req.userId),
+    })
+      .select('-_id -user -createdAt -updatedAt -__v')
+      .lean();
+
+    const vantageURI = process.env.ALPHA_VANTAGE_URI;
+    const vantageKEY = process.env.ALPHA_VANTAGE_KEY;
+    const functionValue = 'GLOBAL_QUOTE';
+
+    // Helper function to look up a single stock info from external api
+    const getStockInfo = async stock => {
+      const params = {
+        function: functionValue,
+        symbol: stock.ticker,
+        apikey: vantageKEY,
+      };
+      const payload = { params };
+      const response = await axios.get(vantageURI, payload);
+      return response.data;
+    };
+
+    // Grab all the latest info on the stocks that the user owns
+    const stocksInfo = await Promise.all(
+      stocks.map(stock => getStockInfo(stock)),
+    );
+
+    for (let i = 0; i < stocks.length; i += 1) {
+      const stock = stocks[i];
+      const quote = stocksInfo[i]['Global Quote'];
+      const openPrice = Number(quote['02. open']).toFixed(2);
+      const currentPrice = Number(quote['05. price']).toFixed(2);
+      console.log(openPrice, currentPrice);
+      if (currentPrice < openPrice) {
+        stock.performance = -1;
+      } else if (currentPrice === openPrice) {
+        stock.performance = 0;
+      } else {
+        stock.performance = 1;
+      }
+
+      stock.value = stock.shares * currentPrice;
+    }
+
+    return res.status(200).json({ user, stocks });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: 'Server error. Please try again later' });
+  }
+});
 
 /**
  * @route   POST api/portfolio
