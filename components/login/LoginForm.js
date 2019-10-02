@@ -1,4 +1,11 @@
-import { Button, Form, Icon, Message, Segment } from 'semantic-ui-react';
+import {
+  Button,
+  Container,
+  Form,
+  Icon,
+  Message,
+  Segment,
+} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 
@@ -11,7 +18,7 @@ const LoginForm = ({
   handleChange,
   handleSubmit,
 }) => (
-  <>
+  <Container text>
     <Message
       attached
       icon="privacy"
@@ -61,7 +68,7 @@ const LoginForm = ({
       </Link>
       &nbsp;instead
     </Message>
-  </>
+  </Container>
 );
 
 LoginForm.propTypes = {
