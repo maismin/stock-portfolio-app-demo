@@ -1,12 +1,11 @@
 import { Menu, Container, Icon } from 'semantic-ui-react';
 import Link from 'next/link';
-import cookie from 'js-cookie';
 import { useRouter } from 'next/router';
+import PropTypes from 'prop-types';
 import { handleLogout } from '../../../utils/auth';
 
-const Header = () => {
+const Header = ({ isAuthenticated }) => {
   const router = useRouter();
-  const isAuthenticated = cookie.get('token');
 
   const isActive = route => {
     return route === router.pathname;
@@ -60,6 +59,10 @@ const Header = () => {
       </Container>
     </Menu>
   );
+};
+
+Header.propTypes = {
+  isAuthenticated: PropTypes.bool.isRequired,
 };
 
 export default Header;

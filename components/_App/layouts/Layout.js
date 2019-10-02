@@ -4,7 +4,7 @@ import { Container } from 'semantic-ui-react';
 
 import Header from '../includes/Header';
 
-function Layout({ children }) {
+function Layout({ children, isAuthenticated }) {
   return (
     <>
       <Head>
@@ -15,16 +15,15 @@ function Layout({ children }) {
         />
         <title>Stock Portfolio App Demo</title>
       </Head>
-      <Header />
-      <Container text style={{ paddingTop: '1em' }}>
-        {children}
-      </Container>
+      <Header isAuthenticated={isAuthenticated} />
+      <Container style={{ paddingTop: '1em' }}>{children}</Container>
     </>
   );
 }
 
 Layout.propTypes = {
   children: PropTypes.object.isRequired, // eslint-disable-line
+  isAuthenticated: PropTypes.bool.isRequired,
 };
 
 export default Layout;
