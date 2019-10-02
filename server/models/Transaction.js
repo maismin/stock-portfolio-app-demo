@@ -1,18 +1,11 @@
 const mongoose = require('mongoose');
+const transactionOptions = require('../utils/transactionOptions');
 
 const { Number, ObjectId, String } = mongoose.Schema.Types;
 
 const options = {
   timestamps: true,
 };
-
-const actionOptions = ['BUY', 'TRADE'];
-
-class transactionClass {
-  static validActions() {
-    return actionOptions;
-  }
-}
 
 const transactionSchema = new mongoose.Schema(
   {
@@ -23,7 +16,7 @@ const transactionSchema = new mongoose.Schema(
     action: {
       type: String,
       required: true,
-      enum: actionOptions,
+      enum: transactionOptions,
     },
     ticker: {
       type: String,
@@ -40,7 +33,5 @@ const transactionSchema = new mongoose.Schema(
   },
   options,
 );
-
-transactionSchema.loadClass(transactionClass);
 
 module.exports = mongoose.model('Transaction', transactionSchema);

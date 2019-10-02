@@ -5,6 +5,7 @@ const auth = require('../../middleware/auth');
 const User = require('../../models/User');
 const Portfolio = require('../../models/Portfolio');
 const Transaction = require('../../models/Transaction');
+const transactionOptions = require('../../utils/transactionOptions');
 
 const alphavantageApi = require('../../services/alphavantage');
 
@@ -73,7 +74,7 @@ router.post('/', auth, async (req, res) => {
     const { action, ticker, shares } = req.body;
 
     // Check if transaction action is valid
-    if (!Transaction.validActions().includes(action)) {
+    if (!transactionOptions.includes(action)) {
       return res.status(400).json({ error: 'Invalid action' });
     }
 
@@ -99,7 +100,8 @@ router.post('/', auth, async (req, res) => {
 
     let newBalance = user.balance;
 
-    if (action === 'BUY') {
+    // If user is buying
+    if (action === transactionOptions[0]) {
       newBalance -= totalCostOfShares;
       if (newBalance < 0) {
         return res.status(400).json({ error: 'Not enough funds' });
@@ -121,7 +123,8 @@ router.post('/', auth, async (req, res) => {
       }
     }
 
-    if (action === 'TRADE') {
+    // If user is selling
+    if (action === transactionOptions[1]) {
       const userStock = await Portfolio.findOne({
         user: ObjectId(req.userId),
         ticker,
