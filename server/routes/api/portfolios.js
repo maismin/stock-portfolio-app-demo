@@ -36,6 +36,7 @@ router.get('/', auth, async (req, res) => {
       stocks.map(stock => alphavantageApi.getStockQuote(stock.ticker)),
     );
 
+    let value = 0;
     for (let i = 0; i < stocks.length; i += 1) {
       const stock = stocks[i];
       const stockQuote = stockQuotes[i]['Global Quote'];
@@ -49,10 +50,12 @@ router.get('/', auth, async (req, res) => {
       } else {
         stock.performance = 1;
       }
-      stock.value = stock.shares * currentPrice;
+
+      value += stock.shares * currentPrice;
+      stock.value = Number(currentPrice);
     }
 
-    return res.status(200).json({ user, stocks });
+    return res.status(200).json({ user, portfolio: { value, stocks } });
   } catch (error) {
     return res
       .status(500)
