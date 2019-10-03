@@ -23,7 +23,7 @@ const mapStocksToRows = stocks => {
           <span>{s.ticker}</span>
         </Table.Cell>
         <Table.Cell>{`${s.shares} shares`}</Table.Cell>
-        <Table.Cell style={color}>{`$ ${s.value}`}</Table.Cell>
+        <Table.Cell style={color}>{s.value}</Table.Cell>
       </Table.Row>
     );
   });
@@ -33,7 +33,7 @@ const PortfolioList = ({ portfolio, fetchError }) => {
   return (
     <>
       <Segment>
-        <Header size="huge">Portfolio - ${portfolio.value}</Header>
+        <Header size="huge">Portfolio - {portfolio.value}</Header>
         {fetchError && <Message error header="Oops!" content={fetchError} />}
       </Segment>
       <Table>

@@ -8,7 +8,7 @@ const Portfolio = require('../../models/Portfolio');
 const Transaction = require('../../models/Transaction');
 const transactionOptions = require('../../utils/transactionOptions');
 
-const alphavantageApi = require('../../services/alphavantage');
+const iexApi = require('../../services/iex');
 
 const router = express.Router();
 
@@ -33,36 +33,48 @@ router.get('/', auth, async (req, res) => {
       .select('-user -createdAt -updatedAt -__v')
       .lean();
 
-    let value = currency(0);
+    // Total value of portfolio
+    let value = currency(0, { formatWithSymbol: true });
 
     if (stocks.length) {
       // Grab all the latest info on the stocks that the user owns
-      const stockQuotes = await Promise.all(
-        stocks.map(stock => alphavantageApi.getStockQuote(stock.ticker)),
-      );
+      const tickers = stocks.map(stock => stock.ticker);
+      const response = await iexApi.getStockQuotes(tickers);
+      const stockQuotes = response.data;
 
       for (let i = 0; i < stocks.length; i += 1) {
         const stock = stocks[i];
-        const stockQuote = stockQuotes[i]['Global Quote'];
-        const openPrice = currency(stockQuote['02. open']).value;
-        const currentPrice = currency(stockQuote['05. price']).value;
 
-        if (currentPrice < openPrice) {
-          stock.performance = -1;
-        } else if (currentPrice === openPrice) {
-          stock.performance = 0;
+        // check if response contains stock quote
+        if (stock.ticker in stockQuotes) {
+          const stockQuote = stockQuotes[stock.ticker];
+          const openPrice = currency(stockQuote.previous.open).value;
+          const currentPrice = currency(stockQuote.price, {
+            formatWithSymbol: true,
+          }).value;
+
+          if (currentPrice < openPrice) {
+            stock.performance = -1;
+          } else if (currentPrice === openPrice) {
+            stock.performance = 0;
+          } else {
+            stock.performance = 1;
+          }
+
+          value = value.add(currency(stock.shares).multiply(currentPrice));
+          stock.value = currency(currentPrice, {
+            formatWithSymbol: true,
+          }).format();
         } else {
-          stock.performance = 1;
+          // no stock quote found, add N/A to stock value
+          stock.performance = 0;
+          stock.value = 'N/A';
         }
-
-        value = value.add(currency(stock.shares).multiply(currentPrice));
-        stock.value = currentPrice.toString();
       }
     }
 
-    user.balance = String(user.balance);
-    value = value.value.toString();
-
+    user.balance = currency(user.balance, { formatWithSymbol: true }).format();
+    value = value.format();
     return res.status(200).json({ user, portfolio: { value, stocks } });
   } catch (error) {
     return res
@@ -97,20 +109,10 @@ router.post('/', auth, async (req, res) => {
     const user = await User.findOne({ _id: req.userId });
 
     // Check if quote symbol matches what the user wants
-    const data = await alphavantageApi.getStockQuote(ticker);
-
-    let quote = null;
-    if (data && 'Global Quote' in data) {
-      quote = data['Global Quote'];
-      if (quote['01. symbol'] !== ticker) {
-        return res.status(400).json({ error: 'Invalid ticker' });
-      }
-    } else {
-      throw Error('External API call to alphavantage failed');
-    }
+    const response = await iexApi.getStockPrice(ticker);
 
     // Calculate price of shares
-    const price = currency(quote['05. price']);
+    const price = currency(response.data);
     const totalCostOfShares = price.multiply(shares);
 
     let newBalance = currency(user.balance);
@@ -186,6 +188,16 @@ router.post('/', auth, async (req, res) => {
 
     return res.status(201).end();
   } catch (error) {
+    console.log(error.response);
+    if (
+      error &&
+      error.response &&
+      error.response.status &&
+      error.response.status === 404
+    ) {
+      return res.status(400).json({ error: 'Invalid ticker' });
+    }
+
     return res
       .status(500)
       .json({ error: 'Server error. Please try again later' });

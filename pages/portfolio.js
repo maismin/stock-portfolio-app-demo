@@ -82,7 +82,7 @@ const Portfolio = ({ portfolio, fetchError }) => {
     <Grid columns={2} divided relaxed stackable>
       <Grid.Column>
         <Segment>
-          <Header size="huge">Cash - ${portfolio.user.balance}</Header>
+          <Header size="huge">Cash - {portfolio.user.balance}</Header>
         </Segment>
         <StockForm
           stock={stock}
