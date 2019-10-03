@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon server/server.js",
     "build": "next build",
-    "start": "NODE_ENV=production node server.js",
+    "start": "NODE_ENV=production node server/server.js",
     "lint": "eslint .",
     "prettier": "prettier \"**/*.+(js|jsx|json|yml|yaml|css|less|scss|ts|md|graphql|mdx)\"",
     "format": "npm run prettier -- --write",
