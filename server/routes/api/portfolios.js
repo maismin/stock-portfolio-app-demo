@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const currency = require('currency.js');
 const auth = require('../../middleware/auth');
 
 const User = require('../../models/User');
@@ -32,35 +33,41 @@ router.get('/', auth, async (req, res) => {
       .select('-user -createdAt -updatedAt -__v')
       .lean();
 
-    // Grab all the latest info on the stocks that the user owns
-    const stockQuotes = await Promise.all(
-      stocks.map(stock => alphavantageApi.getStockQuote(stock.ticker)),
-    );
+    let value = currency(0);
 
-    let value = 0;
-    for (let i = 0; i < stocks.length; i += 1) {
-      const stock = stocks[i];
-      const stockQuote = stockQuotes[i]['Global Quote'];
-      const openPrice = Number(stockQuote['02. open']).toFixed(2);
-      const currentPrice = Number(stockQuote['05. price']).toFixed(2);
+    if (stocks.length) {
+      // Grab all the latest info on the stocks that the user owns
+      const stockQuotes = await Promise.all(
+        stocks.map(stock => alphavantageApi.getStockQuote(stock.ticker)),
+      );
 
-      if (currentPrice < openPrice) {
-        stock.performance = -1;
-      } else if (currentPrice === openPrice) {
-        stock.performance = 0;
-      } else {
-        stock.performance = 1;
+      for (let i = 0; i < stocks.length; i += 1) {
+        const stock = stocks[i];
+        const stockQuote = stockQuotes[i]['Global Quote'];
+        const openPrice = currency(stockQuote['02. open']).value;
+        const currentPrice = currency(stockQuote['05. price']).value;
+
+        if (currentPrice < openPrice) {
+          stock.performance = -1;
+        } else if (currentPrice === openPrice) {
+          stock.performance = 0;
+        } else {
+          stock.performance = 1;
+        }
+
+        value = value.add(currency(stock.shares).multiply(currentPrice));
+        stock.value = currentPrice.toString();
       }
-
-      value += stock.shares * currentPrice;
-      stock.value = Number(currentPrice);
     }
+
+    user.balance = String(user.balance);
+    value = value.value.toString();
 
     return res.status(200).json({ user, portfolio: { value, stocks } });
   } catch (error) {
     return res
       .status(500)
-      .json({ error: 'Server error. Please try again later' });
+      .json({ error: 'Error retrieving user info. Please try again later' });
   }
 });
 
@@ -90,22 +97,27 @@ router.post('/', auth, async (req, res) => {
     const user = await User.findOne({ _id: req.userId });
 
     // Check if quote symbol matches what the user wants
-    const quote = (await alphavantageApi.getStockQuote(ticker))['Global Quote'];
+    const data = await alphavantageApi.getStockQuote(ticker);
 
-    if (!quote || quote['01. symbol'] !== ticker) {
-      console.log(`Ticker: ${ticker}, Quote: ${quote}`);
-      return res.status(400).json({ error: 'Invalid ticker' });
+    let quote = null;
+    if (data && 'Global Quote' in data) {
+      quote = data['Global Quote'];
+      if (quote['01. symbol'] !== ticker) {
+        return res.status(400).json({ error: 'Invalid ticker' });
+      }
+    } else {
+      throw Error('External API call to alphavantage failed');
     }
 
     // Calculate price of shares
-    const price = Number(quote['05. price']).toFixed(2);
-    const totalCostOfShares = shares * price;
+    const price = currency(quote['05. price']);
+    const totalCostOfShares = price.multiply(shares);
 
-    let newBalance = user.balance;
+    let newBalance = currency(user.balance);
 
     // If user is buying
     if (action === transactionOptions[0]) {
-      newBalance -= totalCostOfShares;
+      newBalance = newBalance.subtract(totalCostOfShares);
       if (newBalance < 0) {
         return res.status(400).json({ error: 'Not enough funds' });
       }
@@ -143,7 +155,7 @@ router.post('/', auth, async (req, res) => {
         return res.status(400).json({ error: 'Insufficient shares' });
       }
 
-      newBalance += totalCostOfShares;
+      newBalance = newBalance.add(totalCostOfShares);
 
       // Update or delete portfolio shares
       if (userStock.shares > shares) {
@@ -160,7 +172,7 @@ router.post('/', auth, async (req, res) => {
     // Update user's balance
     await User.findOneAndUpdate(
       { _id: req.userId },
-      { balance: newBalance.toFixed(2) },
+      { balance: newBalance.value },
     ); // eslint-disable-line no-underscore-dangle
 
     // Record transaction
