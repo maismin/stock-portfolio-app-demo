@@ -24,7 +24,7 @@ const LoginForm = ({
       icon="privacy"
       header="Welcome Back!"
       content="Log in with email and password"
-      color="blue"
+      color="black"
     />
     <Form loading={loading} error={Boolean(error)} onSubmit={handleSubmit}>
       <Message error header="Oops!" content={error} />
@@ -55,7 +55,7 @@ const LoginForm = ({
           disabled={disabled || loading}
           icon="sign in"
           type="submit"
-          color="blue"
+          color="black"
           content="Log in"
         />
       </Segment>

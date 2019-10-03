@@ -45,7 +45,7 @@ const StockForm = ({
           fluid
           type="submit"
           name="action"
-          color="blue"
+          color="black"
           content="Submit"
         />
       </Segment>

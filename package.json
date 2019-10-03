@@ -40,6 +40,7 @@
     "next": "^9.0.7",
     "next-compose-plugins": "^2.2.0",
     "nookies": "^2.0.8",
+    "nprogress": "^0.2.0",
     "prop-types": "^15.7.2",
     "react": "^16.10.1",
     "react-dom": "^16.10.1",

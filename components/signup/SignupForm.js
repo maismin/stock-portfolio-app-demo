@@ -24,7 +24,7 @@ const SignupForm = ({
       icon="settings"
       header="Get Started!"
       content="Create a new account"
-      color="blue"
+      color="black"
     />
     <Form loading={loading} error={Boolean(error)} onSubmit={handleSubmit}>
       <Message error header="Oops!" content={error} />
@@ -65,7 +65,7 @@ const SignupForm = ({
           disabled={disabled || loading}
           icon="signup"
           type="submit"
-          color="blue"
+          color="black"
           content="Signup"
         />
       </Segment>

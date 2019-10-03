@@ -1,8 +1,13 @@
 import { Menu, Icon } from 'semantic-ui-react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import Router, { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
+import NProgress from 'nprogress';
 import { handleLogout } from '../../../utils/auth';
+
+Router.onRouteChangeStart = () => NProgress.start();
+Router.onRouteChangeComplete = () => NProgress.done();
+Router.onRouteChangeError = () => NProgress.done();
 
 const Header = ({ isAuthenticated }) => {
   const router = useRouter();
