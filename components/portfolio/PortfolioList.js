@@ -1,4 +1,4 @@
-import { Header, Table, Segment } from 'semantic-ui-react';
+import { Header, Message, Table, Segment } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 
 const performance = value => {
@@ -29,11 +29,12 @@ const mapStocksToRows = stocks => {
   });
 };
 
-const PortfolioList = ({ portfolio }) => {
+const PortfolioList = ({ portfolio, fetchError }) => {
   return (
     <>
       <Segment>
         <Header size="huge">Portfolio - ${portfolio.value}</Header>
+        {fetchError && <Message error header="Oops!" content={fetchError} />}
       </Segment>
       <Table>
         <Table.Body>{mapStocksToRows(portfolio.stocks)}</Table.Body>
@@ -45,9 +46,10 @@ const PortfolioList = ({ portfolio }) => {
 
 PortfolioList.propTypes = {
   portfolio: PropTypes.shape({
-    value: PropTypes.number.isRequired,
+    value: PropTypes.string.isRequired,
     stocks: PropTypes.array.isRequired,
   }).isRequired,
+  fetchError: PropTypes.string.isRequired,
 };
 
 export default PortfolioList;
