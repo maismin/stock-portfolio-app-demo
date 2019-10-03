@@ -1,8 +1,7 @@
-import axios from 'axios';
 import { parseCookies } from 'nookies';
 import PropTypes from 'prop-types';
 import { Grid, Message } from 'semantic-ui-react';
-import baseUrl from '../utils/baseUrl';
+import backend from '../utils/backend';
 import TransactionsList from '../components/transactions/TransactionsList';
 
 const Transactions = ({ transactions, fetchError }) => {
@@ -19,11 +18,9 @@ const Transactions = ({ transactions, fetchError }) => {
 };
 
 Transactions.getInitialProps = async ctx => {
-  const url = `${baseUrl}/api/transactions`;
   const { token } = parseCookies(ctx);
-  const headers = { headers: { Authorization: token } };
   try {
-    const response = await axios.get(url, headers);
+    const response = await backend.fetchData('transactions', token);
     return { transactions: response.data, fetchError: '' };
   } catch (error) {
     return {

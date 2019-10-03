@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import catchErrors from '../utils/catchErrors';
-import baseUrl from '../utils/baseUrl';
+import backend from '../utils/backend';
 import { handleLogin } from '../utils/auth';
 import SignupForm from '../components/signup/SignupForm';
 
@@ -37,10 +36,7 @@ const Signup = () => {
     try {
       setLoading(true);
       setError('');
-      // make request to signup
-      const url = `${baseUrl}/api/signup`;
-      const payload = { ...user };
-      const response = await axios.post(url, payload);
+      const response = await backend.signupWith(user);
       handleLogin(response.data.token);
     } catch (err) {
       catchErrors(err, setError);

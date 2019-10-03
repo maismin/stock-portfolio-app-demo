@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import catchErrors from '../utils/catchErrors';
-import baseUrl from '../utils/baseUrl';
+import backend from '../utils/backend';
 import { handleLogin } from '../utils/auth';
 import LoginForm from '../components/login/LoginForm';
 
@@ -36,9 +35,7 @@ const Login = () => {
     try {
       setLoading(true);
       setError('');
-      const url = `${baseUrl}/api/login`;
-      const payload = { ...user };
-      const response = await axios.post(url, payload);
+      const response = await backend.loginWith(user);
       handleLogin(response.data.token);
     } catch (err) {
       catchErrors(err, setError);

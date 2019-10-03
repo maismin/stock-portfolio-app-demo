@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { parseCookies } from 'nookies';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
 import { Grid, Header, Segment } from 'semantic-ui-react';
-import baseUrl from '../utils/baseUrl';
+import backend from '../utils/backend';
 import catchErrors from '../utils/catchErrors';
 import options from '../server/utils/transactionOptions';
 import StockForm from '../components/portfolio/StockForm';
@@ -66,10 +65,7 @@ const Portfolio = ({ portfolio, fetchError }) => {
       setLoading(true);
       setError('');
       const cookies = parseCookies();
-      const url = `${baseUrl}/api/portfolio`;
-      const headers = { headers: { Authorization: cookies.token } };
-      const payload = { ...stock };
-      await axios.post(url, payload, headers);
+      await backend.postData('portfolio', { ...stock }, cookies.token);
       router.push('/portfolio');
     } catch (err) {
       catchErrors(err, setError);
@@ -106,11 +102,9 @@ const Portfolio = ({ portfolio, fetchError }) => {
 };
 
 Portfolio.getInitialProps = async ctx => {
-  const url = `${baseUrl}/api/portfolio`;
   const { token } = parseCookies(ctx);
-  const headers = { headers: { Authorization: token } };
   try {
-    const response = await axios.get(url, headers);
+    const response = await backend.fetchData('portfolio', token);
     return { portfolio: response.data, fetchError: '' };
   } catch (error) {
     return {
