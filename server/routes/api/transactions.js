@@ -18,7 +18,7 @@ router.get('/', auth, async (req, res) => {
     const transactions = await Transaction.find({
       user: ObjectId(req.userId),
     })
-      .select('-user -__v -updatedAt')
+      .select('-user -__v -updatedAt -createdAt')
       .sort({ createdAt: -1 });
     return res.status(200).json(transactions);
   } catch (error) {
