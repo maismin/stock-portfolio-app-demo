@@ -40,7 +40,6 @@ const Signup = () => {
       handleLogin(response.data.token);
     } catch (err) {
       catchErrors(err, setError);
-    } finally {
       setLoading(false);
     }
   };
