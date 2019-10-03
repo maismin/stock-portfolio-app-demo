@@ -8,7 +8,8 @@ const Transactions = ({ transactions, fetchError }) => {
   return (
     <>
       {fetchError && <Message error header="Oops!" content={fetchError} />}
-      <Grid columns={1} relaxed>
+      <Grid columns={2} relaxed divided stackable>
+        <Grid.Column></Grid.Column>
         <Grid.Column>
           <TransactionsList transactions={transactions} />
         </Grid.Column>
