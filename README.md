@@ -66,7 +66,7 @@ git clone https://github.com/maismin/stock-portfolio-app-demo.git
 npm install
 ```
 
-4. Add the environmental variables to `.env`
+4. Add the environment variables to `.env`
 
 ```text
 MONGODB_URI = 'LINK TO YOUR LOCAL MONGDB SERVER OR CLOUD'
