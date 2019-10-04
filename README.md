@@ -70,7 +70,7 @@ npm install
 
 ```text
 MONGODB_URI = 'LINK TO YOUR LOCAL MONGDB SERVER OR CLOUD'
-IEX_URI_=https://cloud.iexapis.com/stable
+IEX_URI=https://cloud.iexapis.com/stable
 IEX_KEY='YOUR IEX KEY'
 JWT_SECRET='YOUR SECRET'
 ```
