@@ -8,7 +8,7 @@ const loginRouter = require('./routes/api/login');
 const portfolioRouter = require('./routes/api/portfolios');
 const transactionRouter = require('./routes/api/transactions');
 
-const dev = process.env.NODE !== 'production';
+const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
