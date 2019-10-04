@@ -188,7 +188,6 @@ router.post('/', auth, async (req, res) => {
 
     return res.status(201).end();
   } catch (error) {
-    console.log(error.response);
     if (
       error &&
       error.response &&

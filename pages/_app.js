@@ -2,7 +2,7 @@ import App from 'next/app';
 import { withRouter } from 'next/router';
 import { parseCookies } from 'nookies';
 import Layout from '../components/_App/layouts/Layout';
-import { auth, redirectUser } from '../utils/auth';
+import { redirectUser } from '../utils/auth';
 
 class MyApp extends App {
   static async getInitialProps({ Component, ctx }) {
@@ -26,7 +26,7 @@ class MyApp extends App {
       }
     }
 
-    pageProps.isAuthenticated = auth(token);
+    pageProps.isAuthenticated = Boolean(token);
 
     return { pageProps };
   }
