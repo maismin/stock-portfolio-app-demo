@@ -4,6 +4,7 @@ import { Container } from 'semantic-ui-react';
 
 import Header from '../includes/Header';
 
+/* eslint-disable react/jsx-one-expression-per-line, react/jsx-closing-tag-location */
 function Layout({ children, isAuthenticated }) {
   return (
     <>
@@ -19,10 +20,19 @@ function Layout({ children, isAuthenticated }) {
       </Head>
       <Header isAuthenticated={isAuthenticated} />
       <Container style={{ paddingTop: '1em' }}>{children}</Container>
+
+      <style jsx global>{`
+        body {
+          background-image: url('/static/splash.jpeg');
+          background-repeat: no-repeat;
+          background-attachment: fixed;
+          background-size: cover;
+        }
+      `}</style>
     </>
   );
 }
-
+/* eslint-enable react/jsx-one-expression-per-line, react/jsx-closing-tag-location */
 Layout.propTypes = {
   children: PropTypes.object.isRequired, // eslint-disable-line
   isAuthenticated: PropTypes.bool.isRequired,
