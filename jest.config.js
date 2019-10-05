@@ -6,8 +6,6 @@ module.exports = {
   },
   // before jest is loaded
   // setupFiles: [],
-  // after jest is loaded
-  // setupTestFrameworkScriptFile: require.resolve('path_to_setup_file'),
   // collectCoverageFrom: ['**/src/**/*.js'],
   /*
   coverageThreshold: {
