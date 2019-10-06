@@ -4,6 +4,7 @@ module.exports = {
     es6: true,
     node: true,
     jest: true,
+    'cypress/globals': true,
   },
   extends: ['airbnb', 'plugin:prettier/recommended'],
   globals: {
@@ -17,7 +18,7 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: 'module',
   },
-  plugins: ['react'],
+  plugins: ['react', 'eslint-plugin-cypress'],
   rules: {
     'react/react-in-jsx-scope': 'off',
     'react/jsx-props-no-spreading': 'off',
