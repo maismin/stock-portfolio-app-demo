@@ -16,13 +16,13 @@ describe('signup', () => {
     cy.visit('/')
       .findByText('Signup')
       .click()
-      .get('input[name=name')
+      .get('input[name=name]')
       .type(user.name)
-      .get('input[name=email')
+      .get('input[name=email]')
       .type(user.email)
-      .get('input[name=password')
+      .get('input[name=password]')
       .type(user.password)
-      .get('button[type=submit')
+      .get('button[type=submit]')
       .click();
 
     cy.wait('@getPortfolio');

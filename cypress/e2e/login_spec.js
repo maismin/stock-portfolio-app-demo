@@ -15,11 +15,11 @@ describe('login', () => {
 
     cy.createUser(user);
     cy.visit('/login')
-      .get('input[name=email')
+      .get('input[name=email]')
       .type(user.email)
-      .get('input[name=password')
+      .get('input[name=password]')
       .type(user.password)
-      .get('button[type=submit')
+      .get('button[type=submit]')
       .click();
 
     cy.wait('@getPortfolio');
