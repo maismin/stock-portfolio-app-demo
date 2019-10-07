@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 const mapTransactionsToRows = transactions => {
   return transactions.map(t => {
     return (
-      <Table.Row key={t._id}>
+      <Table.Row key={t._id} data-cy="transactions-list">
         <Table.Cell>
           {`${t.action} (${t.ticker}) - ${t.shares} shares @ $ ${t.price}`}
         </Table.Cell>

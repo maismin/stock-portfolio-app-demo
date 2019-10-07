@@ -12,7 +12,12 @@ const StockForm = ({
 }) => (
   <Container>
     <Form loading={loading} error={Boolean(error)} onSubmit={handleSubmit}>
-      <Message error header="Oops!" content={error} />
+      <Message
+        error
+        header="Oops!"
+        content={error}
+        data-cy="stockform-error-message"
+      />
       <Segment>
         <Form.Input
           fluid
@@ -37,6 +42,7 @@ const StockForm = ({
           placeholder="Select an action"
           fluid
           selection
+          name="transactionOptions"
           options={transactionOptions}
           onChange={handleChange}
         />

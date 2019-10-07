@@ -18,7 +18,7 @@ const mapStocksToRows = stocks => {
   return stocks.map(s => {
     const color = performance(s.performance);
     return (
-      <Table.Row key={s._id} style={{ size: '5em' }}>
+      <Table.Row key={s._id} style={{ size: '5em' }} data-cy="portfolio-list">
         <Table.Cell style={color}>
           <span>{s.ticker}</span>
         </Table.Cell>
