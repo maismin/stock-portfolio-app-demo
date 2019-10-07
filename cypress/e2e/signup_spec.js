@@ -29,4 +29,23 @@ describe('signup', () => {
     cy.assertPortfolio();
     cy.assertLoggedIn();
   });
+
+  it('fails if an existing email is used', () => {
+    cy.createUser(user);
+    cy.visit('/')
+      .findByText('Signup')
+      .click()
+      .get('input[name=name]')
+      .type(user.name)
+      .get('input[name=email]')
+      .type(user.email)
+      .get('input[name=password]')
+      .type(user.password)
+      .get('button[type=submit]')
+      .click();
+
+    cy.get('[data-cy=signup-error-message]')
+      .contains('User already exists with email')
+      .should('exist');
+  });
 });

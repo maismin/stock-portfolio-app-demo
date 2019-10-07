@@ -27,7 +27,12 @@ const SignupForm = ({
       color="black"
     />
     <Form loading={loading} error={Boolean(error)} onSubmit={handleSubmit}>
-      <Message error header="Oops!" content={error} />
+      <Message
+        error
+        header="Oops!"
+        content={error}
+        data-cy="signup-error-message"
+      />
       <Segment>
         <Form.Input
           fluid
