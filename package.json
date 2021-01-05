@@ -37,7 +37,7 @@
   },
   "homepage": "https://github.com/maismin/stock-portfolio-app-demo#readme",
   "dependencies": {
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "bcrypt": "^3.0.6",
     "currency.js": "^1.2.2",
     "dotenv": "^8.1.0",
